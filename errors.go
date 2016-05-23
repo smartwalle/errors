@@ -6,37 +6,37 @@ func New(text string) error {
 
 func NewWithCode(code int, text string) error {
 	var err = &errorInfo{}
-	err.code    = code
-	err.message = text
+	err.Code = code
+	err.Message = text
 	return err
 }
 
-func Code(err error) int {
+func ErrorCode(err error) int {
 	if e, ok := err.(errorWithCode); ok {
-		return e.Code()
+		return e.ErrorCode()
 	}
 	return -1
 }
 
-func Message(err error) string {
+func ErrorMessage(err error) string {
 	return err.Error()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 type errorWithCode interface {
-	Code() int
+	ErrorCode() int
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 type errorInfo struct {
-	code    int    `json:"code"`
-	message string `json:"message"`
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 
-func (this *errorInfo) Code() int {
-	return this.code
+func (this *errorInfo) ErrorCode() int {
+	return this.Code
 }
 
 func (this *errorInfo) Error() string {
-	return this.message
+	return this.Message
 }

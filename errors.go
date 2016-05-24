@@ -12,7 +12,7 @@ func NewWithCode(code int, text string) error {
 }
 
 func ErrorCode(err error) int {
-	if e, ok := err.(errorWithCode); ok {
+	if e, ok := err.(ErrorWithCode); ok {
 		return e.ErrorCode()
 	}
 	return -1
@@ -23,7 +23,7 @@ func ErrorMessage(err error) string {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-type errorWithCode interface {
+type ErrorWithCode interface {
 	ErrorCode() int
 }
 

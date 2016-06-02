@@ -12,6 +12,9 @@ func NewWithCode(code int, text string) error {
 }
 
 func ErrorCode(err error) int {
+	if err == nil {
+		return -1
+	}
 	if e, ok := err.(ErrorWithCode); ok {
 		return e.ErrorCode()
 	}
@@ -19,6 +22,9 @@ func ErrorCode(err error) int {
 }
 
 func ErrorMessage(err error) string {
+	if err == nil {
+		return ""
+	}
 	return err.Error()
 }
 

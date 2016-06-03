@@ -13,7 +13,7 @@ func NewWithCode(code int, text string) error {
 
 func ErrorCode(err error) int {
 	if err == nil {
-		return -1
+		return 0
 	}
 	if e, ok := err.(ErrorWithCode); ok {
 		return e.ErrorCode()

@@ -11,8 +11,7 @@ func New(args ...string) *Error {
 	if argsLen == 1 {
 		err.Code = "0"
 		err.Message = args[0]
-	}
-	if argsLen >= 2 {
+	} else if argsLen >= 2 {
 		err.Code = args[0]
 		err.Message = args[1]
 	}

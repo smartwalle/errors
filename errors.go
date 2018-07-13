@@ -1,6 +1,21 @@
 package errors
 
-import "fmt"
+import (
+	"fmt"
+	"runtime"
+)
+
+var (
+	showLocation = true
+)
+
+func ShowLocation() {
+	showLocation = true
+}
+
+func HideLocation() {
+	showLocation = false
+}
 
 // New 最多支持 2 个参数
 // 当只有一个参数的时候，默认给 message 赋值
@@ -21,6 +36,8 @@ func New(args ...string) *Error {
 type Error struct {
 	Code    string `json:"code"`
 	Message string `json:"message,omitempty"`
+	File    string `json:"file,omitempty"`
+	Line    int    `json:"line,omitempty"`
 }
 
 func (this *Error) Error() string {
@@ -28,4 +45,17 @@ func (this *Error) Error() string {
 		fmt.Sprintf("%s - %s", this.Code, this.Message)
 	}
 	return this.Message
+}
+
+func (this *Error) Location() *Error {
+	if showLocation {
+		_, file, line, ok := runtime.Caller(1)
+		if ok == false {
+			file = "???"
+			line = -1
+		}
+		this.File = file
+		this.Line = line
+	}
+	return this
 }

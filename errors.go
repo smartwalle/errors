@@ -33,6 +33,21 @@ func New(args ...string) *Error {
 	return err
 }
 
+func WithError(err error) *Error {
+	var nErr *Error
+	switch e := err.(type) {
+	case *Error:
+		nErr = New(e.Code, e.Message)
+		nErr.File = e.File
+		nErr.Line = e.Line
+	case nil:
+		nErr = nil
+	default:
+		nErr = New(e.Error())
+	}
+	return nErr
+}
+
 type Error struct {
 	Code    string `json:"code"`
 	Message string `json:"message,omitempty"`
@@ -41,10 +56,10 @@ type Error struct {
 }
 
 func (this *Error) Error() string {
-	if this.Code != "" {
-		fmt.Sprintf("%s - %s", this.Code, this.Message)
+	if this.File != "" {
+		return fmt.Sprintf("[%s - %d] %s - %s", this.File, this.Line, this.Code, this.Message)
 	}
-	return this.Message
+	return fmt.Sprintf("%s - %s", this.Code, this.Message)
 }
 
 func (this *Error) Location() *Error {

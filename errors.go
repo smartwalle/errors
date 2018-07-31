@@ -3,6 +3,7 @@ package errors
 import (
 	"fmt"
 	"runtime"
+	"bytes"
 )
 
 var (
@@ -51,26 +52,54 @@ func WithError(err error) *Error {
 type Error struct {
 	Code    string `json:"code"`
 	Message string `json:"message,omitempty"`
+	Err     error  `json:"err,omitempty"`
 	File    string `json:"file,omitempty"`
 	Line    int    `json:"line,omitempty"`
+	Func    string `json:"func,omitempty"`
 }
 
 func (this *Error) Error() string {
+	var buf bytes.Buffer
 	if this.File != "" {
-		return fmt.Sprintf("[%s - %d] %s - %s", this.File, this.Line, this.Code, this.Message)
+		buf.WriteString(fmt.Sprintf("[%s - %s : %d] ", this.File, this.Func, this.Line))
 	}
-	return fmt.Sprintf("%s - %s", this.Code, this.Message)
+	buf.WriteString(this.Code)
+	buf.WriteString(" - ")
+	buf.WriteString(this.Message)
+	if this.Err != nil {
+		buf.WriteString(" (")
+		buf.WriteString(this.Err.Error())
+		buf.WriteString(")")
+	}
+	return buf.String()
 }
 
 func (this *Error) Location() *Error {
+	var err = &Error{}
+	err.Code = this.Code
+	err.Message = this.Message
+	err.Err = this.Err
 	if showLocation {
-		_, file, line, ok := runtime.Caller(1)
+		pc, file, line, ok := runtime.Caller(1)
 		if ok == false {
 			file = "???"
 			line = -1
 		}
-		this.File = file
-		this.Line = line
+		f := runtime.FuncForPC(pc)
+		err.File = file
+		err.Line = line
+		err.Func = f.Name()
 	}
-	return this
+	return err
+}
+
+func (this *Error) WithError(err error) *Error {
+	var e = &Error{}
+	e.Err = err
+	e.Code = this.Code
+	e.Message = this.Message
+	e.File = this.File
+	e.Line = this.Line
+	e.Func = this.Func
+	return e
 }

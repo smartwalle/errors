@@ -7,9 +7,12 @@ import (
 )
 
 func main() {
-	var err = errors.New("测试错误").Location()
-	fmt.Println(err)
+	var e1 = errors.New("1", "error1")
+	var e2 = errors.New("2", "error2").WithError(e1)
+	var e3 = errors.New("3", "error3").WithError(e2).Location()
 
-	mb, _ := json.Marshal(err)
+	fmt.Println(e3)
+
+	mb, _ := json.Marshal(e3)
 	fmt.Println(string(mb))
 }

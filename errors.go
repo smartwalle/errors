@@ -1,22 +1,10 @@
 package errors
 
 import (
+	"bytes"
 	"fmt"
 	"runtime"
-	"bytes"
 )
-
-var (
-	showLocation = true
-)
-
-func ShowLocation() {
-	showLocation = true
-}
-
-func HideLocation() {
-	showLocation = false
-}
 
 // New 最多支持 2 个参数
 // 当只有一个参数的时候，默认给 message 赋值
@@ -39,8 +27,10 @@ func WithError(err error) *Error {
 	switch e := err.(type) {
 	case *Error:
 		nErr = New(e.Code, e.Message)
+		nErr.Err = e.Err
 		nErr.File = e.File
 		nErr.Line = e.Line
+		nErr.Func = e.Func
 	case nil:
 		nErr = nil
 	default:
@@ -67,39 +57,38 @@ func (this *Error) Error() string {
 	buf.WriteString(" - ")
 	buf.WriteString(this.Message)
 	if this.Err != nil {
-		buf.WriteString(" (")
+		buf.WriteString(" {")
 		buf.WriteString(this.Err.Error())
-		buf.WriteString(")")
+		buf.WriteString("}")
 	}
 	return buf.String()
 }
 
 func (this *Error) Location() *Error {
-	var err = &Error{}
-	err.Code = this.Code
-	err.Message = this.Message
-	err.Err = this.Err
-	if showLocation {
-		pc, file, line, ok := runtime.Caller(1)
-		if ok == false {
-			file = "???"
-			line = -1
-		}
-		f := runtime.FuncForPC(pc)
-		err.File = file
-		err.Line = line
-		err.Func = f.Name()
+	var nErr = &Error{}
+	nErr.Code = this.Code
+	nErr.Message = this.Message
+	nErr.Err = this.Err
+
+	pc, file, line, ok := runtime.Caller(1)
+	if ok == false {
+		file = "???"
+		line = -1
 	}
-	return err
+	f := runtime.FuncForPC(pc)
+	nErr.File = file
+	nErr.Line = line
+	nErr.Func = f.Name()
+	return nErr
 }
 
 func (this *Error) WithError(err error) *Error {
-	var e = &Error{}
-	e.Err = err
-	e.Code = this.Code
-	e.Message = this.Message
-	e.File = this.File
-	e.Line = this.Line
-	e.Func = this.Func
-	return e
+	var nErr = &Error{}
+	nErr.Code = this.Code
+	nErr.Message = this.Message
+	nErr.Err = err
+	nErr.File = this.File
+	nErr.Line = this.Line
+	nErr.Func = this.Func
+	return nErr
 }

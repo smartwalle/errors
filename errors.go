@@ -64,6 +64,17 @@ func (this *Error) Error() string {
 	return buf.String()
 }
 
+func (this *Error) Format(args ...interface{}) *Error {
+	var nErr = &Error{}
+	nErr.Code = this.Code
+	nErr.Message = fmt.Sprintf(this.Message, args...)
+	nErr.Err = this.Err
+	nErr.File = this.File
+	nErr.Line = this.Line
+	nErr.Func = this.Func
+	return nErr
+}
+
 func (this *Error) Location() *Error {
 	var nErr = &Error{}
 	nErr.Code = this.Code

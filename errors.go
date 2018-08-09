@@ -26,7 +26,9 @@ func WithError(err error) *Error {
 	var nErr *Error
 	switch e := err.(type) {
 	case *Error:
-		nErr = New(e.Code, e.Message)
+		nErr = &Error{}
+		nErr.Code = e.Code
+		nErr.Message = e.Message
 		nErr.Err = e.Err
 		nErr.File = e.File
 		nErr.Line = e.Line

@@ -31,6 +31,7 @@ func WithError(err error) *Error {
 		nErr.File = e.File
 		nErr.Line = e.Line
 		nErr.Func = e.Func
+		nErr.Data = e.Data
 	case nil:
 		nErr = nil
 	default:
@@ -39,13 +40,21 @@ func WithError(err error) *Error {
 	return nErr
 }
 
+func WithData(data interface{}) *Error {
+	var nErr = &Error{}
+	nErr.Code = "0"
+	nErr.Data = data
+	return nErr
+}
+
 type Error struct {
-	Code    string `json:"code"`
-	Message string `json:"message,omitempty"`
-	Err     error  `json:"err,omitempty"`
-	File    string `json:"file,omitempty"`
-	Line    int    `json:"line,omitempty"`
-	Func    string `json:"func,omitempty"`
+	Code    string      `json:"code"`
+	Message string      `json:"message,omitempty"`
+	Err     error       `json:"err,omitempty"`
+	File    string      `json:"file,omitempty"`
+	Line    int         `json:"line,omitempty"`
+	Func    string      `json:"func,omitempty"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
 func (this *Error) Error() string {
@@ -72,6 +81,7 @@ func (this *Error) Format(args ...interface{}) *Error {
 	nErr.File = this.File
 	nErr.Line = this.Line
 	nErr.Func = this.Func
+	nErr.Data = this.Data
 	return nErr
 }
 
@@ -90,6 +100,7 @@ func (this *Error) Location() *Error {
 	nErr.File = file
 	nErr.Line = line
 	nErr.Func = f.Name()
+	nErr.Data = this.Data
 	return nErr
 }
 
@@ -101,5 +112,18 @@ func (this *Error) WithError(err error) *Error {
 	nErr.File = this.File
 	nErr.Line = this.Line
 	nErr.Func = this.Func
+	nErr.Data = this.Data
+	return nErr
+}
+
+func (this *Error) WithData(data interface{}) *Error {
+	var nErr = &Error{}
+	nErr.Code = this.Code
+	nErr.Message = this.Message
+	nErr.Err = this.Err
+	nErr.File = this.File
+	nErr.Line = this.Line
+	nErr.Func = this.Func
+	nErr.Data = data
 	return nErr
 }

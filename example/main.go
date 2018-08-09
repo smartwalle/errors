@@ -15,4 +15,9 @@ func main() {
 
 	mb, _ := json.Marshal(e3)
 	fmt.Println(string(mb))
+
+
+	var e4 = errors.WithData(e3)
+	mb, _ = json.Marshal(e4)
+	fmt.Println(string(mb))
 }

@@ -73,6 +73,10 @@ func (this *Error) Error() string {
 		buf.WriteString(this.Err.Error())
 		buf.WriteString("}")
 	}
+	if this.Stacks != "" {
+		buf.WriteString("\n")
+		buf.WriteString(this.Stacks)
+	}
 	return buf.String()
 }
 

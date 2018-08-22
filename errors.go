@@ -57,6 +57,7 @@ type Error struct {
 	Line    int         `json:"line,omitempty"`
 	Func    string      `json:"func,omitempty"`
 	Data    interface{} `json:"data,omitempty"`
+	Stacks  string      `json:"stack,omitempty"`
 }
 
 func (this *Error) Error() string {
@@ -75,57 +76,37 @@ func (this *Error) Error() string {
 	return buf.String()
 }
 
-func (this *Error) Format(args ...interface{}) *Error {
-	var nErr = &Error{}
-	nErr.Code = this.Code
-	nErr.Message = fmt.Sprintf(this.Message, args...)
-	nErr.Err = this.Err
-	nErr.File = this.File
-	nErr.Line = this.Line
-	nErr.Func = this.Func
-	nErr.Data = this.Data
-	return nErr
+func (this Error) Format(args ...interface{}) *Error {
+	this.Message = fmt.Sprintf(this.Message, args...)
+	return &this
 }
 
-func (this *Error) Location() *Error {
-	var nErr = &Error{}
-	nErr.Code = this.Code
-	nErr.Message = this.Message
-	nErr.Err = this.Err
-
+func (this Error) Location() *Error {
 	pc, file, line, ok := runtime.Caller(1)
 	if ok == false {
 		file = "???"
 		line = -1
 	}
 	f := runtime.FuncForPC(pc)
-	nErr.File = file
-	nErr.Line = line
-	nErr.Func = f.Name()
-	nErr.Data = this.Data
-	return nErr
+	this.File = file
+	this.Line = line
+	this.Func = f.Name()
+	return &this
 }
 
-func (this *Error) WithError(err error) *Error {
-	var nErr = &Error{}
-	nErr.Code = this.Code
-	nErr.Message = this.Message
-	nErr.Err = err
-	nErr.File = this.File
-	nErr.Line = this.Line
-	nErr.Func = this.Func
-	nErr.Data = this.Data
-	return nErr
+func (this Error) Stack() *Error {
+	var buf [2048]byte
+	n := runtime.Stack(buf[:], true)
+	this.Stacks = string(buf[:n])
+	return &this
 }
 
-func (this *Error) WithData(data interface{}) *Error {
-	var nErr = &Error{}
-	nErr.Code = this.Code
-	nErr.Message = this.Message
-	nErr.Err = this.Err
-	nErr.File = this.File
-	nErr.Line = this.Line
-	nErr.Func = this.Func
-	nErr.Data = data
-	return nErr
+func (this Error) WithError(err error) *Error {
+	this.Err = err
+	return &this
+}
+
+func (this Error) WithData(data interface{}) *Error {
+	this.Data = data
+	return &this
 }

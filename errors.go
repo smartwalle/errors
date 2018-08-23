@@ -57,7 +57,6 @@ type Error struct {
 	Line    int         `json:"line,omitempty"`
 	Func    string      `json:"func,omitempty"`
 	Data    interface{} `json:"data,omitempty"`
-	Stacks  string      `json:"stack,omitempty"`
 }
 
 func (this *Error) Error() string {
@@ -72,10 +71,6 @@ func (this *Error) Error() string {
 		buf.WriteString(" {")
 		buf.WriteString(this.Err.Error())
 		buf.WriteString("}")
-	}
-	if this.Stacks != "" {
-		buf.WriteString("\n")
-		buf.WriteString(this.Stacks)
 	}
 	return buf.String()
 }
@@ -95,13 +90,6 @@ func (this Error) Location() *Error {
 	this.File = file
 	this.Line = line
 	this.Func = f.Name()
-	return &this
-}
-
-func (this Error) Stack() *Error {
-	var buf [2048]byte
-	n := runtime.Stack(buf[:], true)
-	this.Stacks = string(buf[:n])
 	return &this
 }
 

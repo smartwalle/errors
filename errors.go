@@ -2,6 +2,7 @@ package errors
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"runtime"
 )
@@ -22,37 +23,17 @@ func New(args ...string) *Error {
 	return err
 }
 
-func WithError(err error) *Error {
-	var nErr *Error
-	switch e := err.(type) {
-	case *Error:
-		nErr = &Error{}
-		nErr.Code = e.Code
-		nErr.Message = e.Message
-		nErr.Err = e.Err
-		nErr.File = e.File
-		nErr.Line = e.Line
-		nErr.Func = e.Func
-		nErr.Data = e.Data
-	case nil:
-		nErr = nil
-	default:
-		nErr = New(e.Error())
+func Parse(s string) *Error {
+	var e *Error
+	if err := json.Unmarshal([]byte(s), &e); err != nil {
+		return New(s)
 	}
-	return nErr
-}
-
-func WithData(data interface{}) *Error {
-	var nErr = &Error{}
-	nErr.Code = "0"
-	nErr.Data = data
-	return nErr
+	return e
 }
 
 type Error struct {
 	Code    string      `json:"code"`
 	Message string      `json:"message,omitempty"`
-	Err     error       `json:"err,omitempty"`
 	File    string      `json:"file,omitempty"`
 	Line    int         `json:"line,omitempty"`
 	Func    string      `json:"func,omitempty"`
@@ -67,11 +48,6 @@ func (this *Error) Error() string {
 	buf.WriteString(this.Code)
 	buf.WriteString(" - ")
 	buf.WriteString(this.Message)
-	if this.Err != nil {
-		buf.WriteString(" {")
-		buf.WriteString(this.Err.Error())
-		buf.WriteString("}")
-	}
 	return buf.String()
 }
 
@@ -90,11 +66,6 @@ func (this Error) Location() *Error {
 	this.File = file
 	this.Line = line
 	this.Func = f.Name()
-	return &this
-}
-
-func (this Error) WithError(err error) *Error {
-	this.Err = err
 	return &this
 }
 

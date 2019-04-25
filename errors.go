@@ -8,7 +8,7 @@ import (
 )
 
 func New(code int32, message string) *Error {
-	err := &Error{}
+	var err = &Error{}
 	err.Code = code
 	err.Message = message
 	return err

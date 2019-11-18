@@ -64,3 +64,8 @@ func (this Error) WithData(data interface{}) *Error {
 	this.Data = data
 	return &this
 }
+
+func (this Error) WithMessage(msg string) *Error {
+	this.Message = msg
+	return &this
+}

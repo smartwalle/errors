@@ -7,6 +7,11 @@ import (
 )
 
 func main() {
+	var e1 = errors.New(1, "error1")
+	fmt.Println(e1)
+	var e2 = errors.Parse(e1.Error())
+	fmt.Println(e2)
+
 	var e3 = errors.New(3, "error3").Location().WithData("sss")
 
 	fmt.Println(e3)

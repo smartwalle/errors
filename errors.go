@@ -1,7 +1,6 @@
 package errors
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"runtime"
@@ -32,14 +31,17 @@ type Error struct {
 }
 
 func (this *Error) Error() string {
-	var buf bytes.Buffer
-	if this.File != "" {
-		buf.WriteString(fmt.Sprintf("[%s - %s : %d] ", this.File, this.Func, this.Line))
-	}
-	buf.WriteString(fmt.Sprintf("%d", this.Code))
-	buf.WriteString(" - ")
-	buf.WriteString(this.Message)
-	return buf.String()
+	//var buf bytes.Buffer
+	//if this.File != "" {
+	//	buf.WriteString(fmt.Sprintf("[%s - %s : %d] ", this.File, this.Func, this.Line))
+	//}
+	//buf.WriteString(fmt.Sprintf("%d", this.Code))
+	//buf.WriteString(" - ")
+	//buf.WriteString(this.Message)
+	//return buf.String()
+
+	bytes, _ := json.Marshal(this)
+	return string(bytes)
 }
 
 func (this Error) Format(args ...interface{}) *Error {

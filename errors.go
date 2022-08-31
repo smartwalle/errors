@@ -41,12 +41,12 @@ func Parse(s string) *Error {
 }
 
 type Error struct {
-	Code    int32       `json:"code"`
+	Data    interface{} `json:"data,omitempty"`
 	Message string      `json:"message,omitempty"`
 	File    string      `json:"file,omitempty"`
-	Line    int         `json:"line,omitempty"`
 	Func    string      `json:"func,omitempty"`
-	Data    interface{} `json:"data,omitempty"`
+	Line    int         `json:"line,omitempty"`
+	Code    int32       `json:"code"`
 }
 
 func (this *Error) Error() string {

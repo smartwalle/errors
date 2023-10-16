@@ -49,44 +49,44 @@ type Error struct {
 	Code    int32       `json:"code"`
 }
 
-func (this *Error) Error() string {
+func (e *Error) Error() string {
 	var buf bytes.Buffer
-	//if this.File != "" {
-	//	buf.WriteString(fmt.Sprintf("[%s - %s : %d] ", this.File, this.Func, this.Line))
+	//if e.File != "" {
+	//	buf.WriteString(fmt.Sprintf("[%s - %s : %d] ", e.File, e.Func, e.Line))
 	//}
-	buf.WriteString(fmt.Sprintf("%d", this.Code))
+	buf.WriteString(fmt.Sprintf("%d", e.Code))
 	buf.WriteString(sep)
-	buf.WriteString(this.Message)
+	buf.WriteString(e.Message)
 	return buf.String()
 
-	//bytes, _ := json.Marshal(this)
+	//bytes, _ := json.Marshal(e)
 	//return string(bytes)
 }
 
-func (this Error) Format(args ...interface{}) *Error {
-	this.Message = fmt.Sprintf(this.Message, args...)
-	return &this
+func (e Error) Format(args ...interface{}) *Error {
+	e.Message = fmt.Sprintf(e.Message, args...)
+	return &e
 }
 
-func (this Error) Location() *Error {
+func (e Error) Location() *Error {
 	pc, file, line, ok := runtime.Caller(1)
 	if ok == false {
 		file = "???"
 		line = -1
 	}
 	f := runtime.FuncForPC(pc)
-	this.File = file
-	this.Line = line
-	this.Func = f.Name()
-	return &this
+	e.File = file
+	e.Line = line
+	e.Func = f.Name()
+	return &e
 }
 
-func (this Error) WithData(data interface{}) *Error {
-	this.Data = data
-	return &this
+func (e Error) WithData(data interface{}) *Error {
+	e.Data = data
+	return &e
 }
 
-func (this Error) WithMessage(msg string) *Error {
-	this.Message = msg
-	return &this
+func (e Error) WithMessage(msg string) *Error {
+	e.Message = msg
+	return &e
 }

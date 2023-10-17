@@ -63,30 +63,35 @@ func (e *Error) Error() string {
 	//return string(bytes)
 }
 
-func (e Error) Format(args ...interface{}) *Error {
-	e.Message = fmt.Sprintf(e.Message, args...)
-	return &e
+func (e *Error) Format(args ...interface{}) *Error {
+	var ne = *e
+	ne.Message = fmt.Sprintf(e.Message, args...)
+	return &ne
 }
 
-func (e Error) Location() *Error {
+func (e *Error) Location() *Error {
 	pc, file, line, ok := runtime.Caller(1)
 	if ok == false {
 		file = "???"
 		line = -1
 	}
 	f := runtime.FuncForPC(pc)
-	e.File = file
-	e.Line = line
-	e.Func = f.Name()
-	return &e
+
+	var ne = *e
+	ne.File = file
+	ne.Line = line
+	ne.Func = f.Name()
+	return &ne
 }
 
-func (e Error) WithData(data interface{}) *Error {
-	e.Data = data
-	return &e
+func (e *Error) WithData(data interface{}) *Error {
+	var ne = *e
+	ne.Data = data
+	return &ne
 }
 
-func (e Error) WithMessage(msg string) *Error {
-	e.Message = msg
-	return &e
+func (e *Error) WithMessage(msg string) *Error {
+	var ne = *e
+	ne.Message = msg
+	return &ne
 }

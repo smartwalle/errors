@@ -7,28 +7,28 @@ import (
 
 func New(code int, message string) *Error {
 	var err = &Error{}
-	err.Code = code
-	err.Message = message
+	err.code = code
+	err.message = message
 	return err
 }
 
 type Error struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+	code    int
+	message string
 }
 
 func (e *Error) Error() string {
 	var buf bytes.Buffer
-	buf.WriteString(strconv.Itoa(e.Code))
+	buf.WriteString(strconv.Itoa(e.code))
 	buf.WriteByte('-')
-	buf.WriteString(e.Message)
+	buf.WriteString(e.message)
 	return buf.String()
 }
 
-func (e *Error) GetCode() int {
-	return e.Code
+func (e *Error) Code() int {
+	return e.code
 }
 
-func (e *Error) GetMessage() string {
-	return e.Message
+func (e *Error) Message() string {
+	return e.message
 }

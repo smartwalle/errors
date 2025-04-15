@@ -24,3 +24,11 @@ func (e *Error) Error() string {
 	buf.WriteString(e.Message)
 	return buf.String()
 }
+
+func (e *Error) GetCode() int {
+	return e.Code
+}
+
+func (e *Error) GetMessage() string {
+	return e.Message
+}
